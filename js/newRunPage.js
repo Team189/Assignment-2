@@ -7,9 +7,12 @@ var longitude;
 var accuracyRecord;
 var AccCircle=0;
 var beachMarker
-var randomDis = "0.00";
+var randomDis = 0;
 var plusOrMinusA;
 var plusOrMinusB;
+var gg1
+var gg2
+var nextPos
 var p1;
 var p2;
 var p3;
@@ -17,6 +20,7 @@ var a;
 var b;
 var c; //for incase
 var na =[];
+var flightPath
 var travelDis = 0;
 var disCheck = "dafuq";
 var goNow = document.getElementById("go");
@@ -28,7 +32,9 @@ var options = {
 };
 
 document.getElementById("sav").disabled = true;
-document.getElementById("clea").disabled = true;
+document.getElementById("go").disabled = true;
+document.getElementById("cancel").disabled = true;
+
 
 // To initiate the map and initiate user tracking
 function initMap() {
@@ -147,36 +153,65 @@ function randomDestination()
 //    else
 //    {
     
-
+    if(randomDis === 0)
+        {
     while (randomDis < 60 || randomDis > 150)
         {
         //provide a location 60m and 150m away from current location
         plusOrMinusA = Math.random() < 0.5 ? -1 : 1
         plusOrMinusB = Math.random() < 0.5 ? -1 : 1
     
-        var gg1 = Math.random()*plusOrMinusA*0.3 + latitude;
-        var gg2 = Math.random()*plusOrMinusB*0.3 + longitude;
+        gg1 = Math.random()*plusOrMinusA*0.3 + latitude;
+        gg2 = Math.random()*plusOrMinusB*0.3 + longitude;
         
-        nextPos = {
-            lat: gg1,
-            lng: gg2
-        }
-  
-//    }
     
     p1 = new google.maps.LatLng(latitude, longitude);
     p2 = new google.maps.LatLng(gg1,gg2)
     
    randomDis = calcDistance(p1, p2);    
         }
+            nextPos = {
+            lat: gg1,
+            lng: gg2
+            }
     
-    //calculates distance between two points in km's
-    function calcDistance(p1, p2) {
-        return (google.maps.geometry.spherical.computeDistanceBetween(p1, p2)).toFixed(2);
+    beachMarker = new google.maps.Circle({
+        strokeColor: '#00ff00',
+        strokeOpacity: 1,
+        strokeWeight: 2,
+        fillColor: '#00ff00',
+        fillOpacity: 1,
+        map: map,
+        center: new google.maps.LatLng(gg1,gg2),
+        radius: 2
+    }) 
     }
+    else
+        {
+            beachMarker.setMap(null)
+            randomDis = 0;
+            
+            while (randomDis < 60 || randomDis > 150)
+        {
+        //provide a location 60m and 150m away from current location
+        plusOrMinusA = Math.random() < 0.5 ? -1 : 1
+        plusOrMinusB = Math.random() < 0.5 ? -1 : 1
     
+        gg1 = Math.random()*plusOrMinusA*0.3 + latitude;
+        gg2 = Math.random()*plusOrMinusB*0.3 + longitude;
+        
     
-    var beachMarker = new google.maps.Circle({
+    p1 = new google.maps.LatLng(latitude, longitude);
+    p2 = new google.maps.LatLng(gg1,gg2)
+    
+   randomDis = calcDistance(p1, p2);    
+        }
+            nextPos = {
+            lat: gg1,
+            lng: gg2
+        }
+    
+    beachMarker = new google.maps.Circle({
         strokeColor: '#00ff00',
         strokeOpacity: 1,
         strokeWeight: 2,
@@ -186,12 +221,22 @@ function randomDestination()
         center: new google.maps.LatLng(gg1,gg2),
         radius: 2
     })
-    
-    document.getElementById("go").disabled = true;
-    document.getElementById("sav").disabled = false;
-    document.getElementById("clea").disabled = false;
+        }
+        
+    document.getElementById("go").disabled = false;
+}
 
-        goNow.innerHTML = "Ready?";
+    //calculates distance between two points in km's
+    function calcDistance(p1, p2) {
+        return (google.maps.geometry.spherical.computeDistanceBetween(p1, p2)).toFixed(2);
+    }
+
+function start()
+{
+    document.getElementById("go").disabled = true;
+    document.getElementById("cancel").disabled = false;
+    document.getElementById("gen").disabled = true;
+    goNow.innerHTML = "Ready?";
     
     setTimeout(counter3, 1000)
     
@@ -213,6 +258,7 @@ function randomDestination()
     {
         goNow.innerHTML = "1";
         a = setInterval(countTime, 1000);
+
         
     }
 
@@ -220,19 +266,17 @@ function randomDestination()
     
     function go()
     {
-        goNow.innerHTML = "YOU KNOW LEL XD";
+        goNow.innerHTML = "Start";
         p3 = new google.maps.LatLng(latitude,longitude);
         b = setInterval(userPathing, 333);
         c = setInterval(success, 100);
     }
-    
-    
 }
 
 function userPathing()
 {
     //track user history track line
-    var flightPath = new google.maps.Circle({
+    flightPath = new google.maps.Circle({
         strokeColor: '#cc0000',
         strokeOpacity: 0.5,
         strokeWeight: 2,
@@ -259,8 +303,10 @@ function success()
             clearInterval(a);
             clearInterval(b);
             clearInterval(c);
+            document.getElementById("sav").disabled = false;
         }
 }
+
 var incre = 0
 
 function countTime()
