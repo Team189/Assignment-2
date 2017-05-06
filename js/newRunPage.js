@@ -1,6 +1,6 @@
 // Code for the Measure Run page.
 
-var pos;
+var currentPosition;
 var now;
 var latitude;
 var longitude;
@@ -10,18 +10,19 @@ var beachMarker
 var randomDis = 0;
 var plusOrMinusA;
 var plusOrMinusB;
-var gg1
-var gg2
-var nextPos
-var p1;
-var p2;
-var p3;
-var a;
-var b;
-var c; //for incase
-var na =[];
-var flightPath
+var latitudeTarget;
+var longitudeTarget;
+var targetPosition;
+var currentPosition1;
+var targetPosition1;
+var previousPosition;
+var timeCounter;
+var pathCounter;
+var reached; 
+var storingArray =[];
+var walkPathing;
 var travelDis = 0;
+var incre = 0;
 var disCheck = "dafuq";
 var goNow = document.getElementById("go");
 var outputAreaRef = document.getElementById('output');
@@ -52,7 +53,7 @@ function initMap() {
     track = navigator.geolocation.watchPosition(userLoc,errorLoc,positionOption)
 }
 
-var p3;
+
 
 
 
@@ -62,12 +63,12 @@ function userLoc(position)
     latitude = position.coords.latitude;
     longitude = position.coords.longitude;
     
-    pos = {
+    currentPosition = {
         lat: latitude,
         lng: longitude
     }
     
-    map.setCenter(pos);
+    map.setCenter(currentPosition);
     
     accuracyRecord = Number(position.coords.accuracy);
     if (AccCircle===0)
@@ -78,7 +79,7 @@ function userLoc(position)
         strokeWeight: 2,
         fillColor: '#0000FF',
         map: map,
-        center: pos,
+        center: currentPosition,
         radius: accuracyRecord
     })
     
@@ -89,7 +90,7 @@ function userLoc(position)
         fillColor: '#0000FF',
         fillOpacity: 1,
         map: map,
-        center: pos,
+        center: currentPosition,
         radius: 2
     })
     }
@@ -103,7 +104,7 @@ function userLoc(position)
                 strokeWeight: 2,
                 fillColor: '#0000FF',
                 map: map,
-                center: pos,
+                center: currentPosition,
                 radius: accuracyRecord
               })
               
@@ -114,7 +115,7 @@ function userLoc(position)
                 fillColor: '#0000FF',
                 fillOpacity: 1,
                 map: map,
-                center: pos,
+                center: currentPosition,
                 radius: 2
             })
             }
@@ -161,18 +162,18 @@ function randomDestination()
         plusOrMinusA = Math.random() < 0.5 ? -1 : 1
         plusOrMinusB = Math.random() < 0.5 ? -1 : 1
     
-        gg1 = Math.random()*plusOrMinusA*0.3 + latitude;
-        gg2 = Math.random()*plusOrMinusB*0.3 + longitude;
+        latitudeTarget = Math.random()*plusOrMinusA*0.3 + latitude;
+        longitudeTarget = Math.random()*plusOrMinusB*0.3 + longitude;
         
     
-    p1 = new google.maps.LatLng(latitude, longitude);
-    p2 = new google.maps.LatLng(gg1,gg2)
+    currentPosition1 = new google.maps.LatLng(latitude, longitude);
+    targetPosition1 = new google.maps.LatLng(latitudeTarget,longitudeTarget)
     
-   randomDis = calcDistance(p1, p2);    
+   randomDis = calcDistance(currentPosition1, targetPosition1);    
         }
-            nextPos = {
-            lat: gg1,
-            lng: gg2
+            targetPosition = {
+            lat: latitudeTarget,
+            lng: longitudeTarget
             }
     
     beachMarker = new google.maps.Circle({
@@ -182,7 +183,7 @@ function randomDestination()
         fillColor: '#00ff00',
         fillOpacity: 1,
         map: map,
-        center: new google.maps.LatLng(gg1,gg2),
+        center: new google.maps.LatLng(latitudeTarget,longitudeTarget),
         radius: 2
     }) 
     }
@@ -197,18 +198,18 @@ function randomDestination()
         plusOrMinusA = Math.random() < 0.5 ? -1 : 1
         plusOrMinusB = Math.random() < 0.5 ? -1 : 1
     
-        gg1 = Math.random()*plusOrMinusA*0.3 + latitude;
-        gg2 = Math.random()*plusOrMinusB*0.3 + longitude;
+        latitudeTarget = Math.random()*plusOrMinusA*0.3 + latitude;
+        longitudeTarget = Math.random()*plusOrMinusB*0.3 + longitude;
         
     
-    p1 = new google.maps.LatLng(latitude, longitude);
-    p2 = new google.maps.LatLng(gg1,gg2)
+    currentPosition1 = new google.maps.LatLng(latitude, longitude);
+    targetPosition1 = new google.maps.LatLng(latitudeTarget,longitudeTarget)
     
-   randomDis = calcDistance(p1, p2);    
+   randomDis = calcDistance(currentPosition1, targetPosition1);    
         }
-            nextPos = {
-            lat: gg1,
-            lng: gg2
+            targetPosition = {
+            lat: latitudeTarget,
+            lng: longitudeTarget
         }
     
     beachMarker = new google.maps.Circle({
@@ -218,7 +219,7 @@ function randomDestination()
         fillColor: '#00ff00',
         fillOpacity: 1,
         map: map,
-        center: new google.maps.LatLng(gg1,gg2),
+        center: new google.maps.LatLng(latitudeTarget,longitudeTarget),
         radius: 2
     })
         }
@@ -227,14 +228,13 @@ function randomDestination()
 }
 
     //calculates distance between two points in km's
-    function calcDistance(p1, p2) {
-        return (google.maps.geometry.spherical.computeDistanceBetween(p1, p2)).toFixed(2);
+    function calcDistance(currentPosition1, targetPosition1) {
+        return (google.maps.geometry.spherical.computeDistanceBetween(currentPosition1, targetPosition1)).toFixed(2);
     }
 
 function start()
 {
     document.getElementById("go").disabled = true;
-    document.getElementById("cancel").disabled = false;
     document.getElementById("gen").disabled = true;
     goNow.innerHTML = "Ready?";
     
@@ -242,7 +242,7 @@ function start()
     
     function counter3()
     {
-        goNow.innerHTML = "3";
+        goNow.innerHTML = "3";latitudeTarget
     }
     
     setTimeout(counter2, 2000)
@@ -257,7 +257,7 @@ function start()
     function counter1()
     {
         goNow.innerHTML = "1";
-        a = setInterval(countTime, 1000);
+        timeCounter = setInterval(countTime, 1000);
 
         
     }
@@ -267,47 +267,48 @@ function start()
     function go()
     {
         goNow.innerHTML = "Start";
-        p3 = new google.maps.LatLng(latitude,longitude);
-        b = setInterval(userPathing, 333);
-        c = setInterval(success, 100);
+        document.getElementById("cancel").disabled = false;
+        previousPosition = new google.maps.LatLng(latitude,longitude);
+        pathCounter = setInterval(userPathing, 333);
+        reached = setInterval(success, 100);
     }
 }
 
 function userPathing()
 {
     //track user history track line
-    flightPath = new google.maps.Circle({
+    walkPathing = new google.maps.Circle({
         strokeColor: '#cc0000',
         strokeOpacity: 0.5,
         strokeWeight: 2,
         fillColor: '#cc0000',
         fillOpacity: 1,
         map: map,
-        center: pos,
+        center: currentPosition,
         radius: 0.5
     })
     
-    travelDis = (google.maps.geometry.spherical.computeDistanceBetween(p1, p3)).toFixed(1) + Number(travelDis);
+    travelDis = (google.maps.geometry.spherical.computeDistanceBetween(currentPosition1, previousPosition)).toFixed(1) + Number(travelDis);
     
-    na.push(p3) 
-    p3 = new google.maps.LatLng(latitude,longitude);
+    storingArray.push(previousPosition) 
+    previousPosition = new google.maps.LatLng(latitude,longitude);
     
         
-    disCheck = (google.maps.geometry.spherical.computeDistanceBetween(p1, p2)).toFixed(2);    
+    disCheck = (google.maps.geometry.spherical.computeDistanceBetween(currentPosition1, targetPosition1)).toFixed(2);    
 }
 
 function success()
 {
     if (disCheck === 0)
         {
-            clearInterval(a);
-            clearInterval(b);
-            clearInterval(c);
+            clearInterval(timeCounter);
+            clearInterval(pathCounter);
+            clearInterval(reached);
             document.getElementById("sav").disabled = false;
         }
 }
 
-var incre = 0
+
 
 function countTime()
 {
