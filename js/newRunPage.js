@@ -5,8 +5,8 @@ var now;
 var latitude;
 var longitude;
 var accuracyRecord;
-var AccCircle=0;
-var beachMarker
+var AccCircle = 0;
+var beachMarker;
 var randomDis = 0;
 var plusOrMinusA;
 var plusOrMinusB;
@@ -19,7 +19,7 @@ var previousPosition;
 var timeCounter;
 var pathCounter;
 var reached; 
-var storingArray =[];
+var storingArray = [];
 var walkPathing;
 var travelDis = 0;
 var incre = 0;
@@ -31,18 +31,26 @@ var options = {
     timeout: 5000,
     maximumAge: 0
 };
+var thisRun;
+var startTime;
+var endTime;
+var marker;
 
 document.getElementById("sav").disabled = true;
 document.getElementById("go").disabled = true;
-document.getElementById("cancel").disabled = true;
+document.getElementById("clea").disabled = true;
+
 
 
 // To initiate the map and initiate user tracking
 function initMap() 
 {
     map = new google.maps.Map(document.getElementById('map'), {    //initialise the map
-        zoom: 17
+        zoom: 17,
+        
     });
+    
+    
     
     positionOption = {
         enableHighAccuracy: true,
@@ -63,16 +71,26 @@ function userLoc(position)
     longitude = position.coords.longitude;
     
     currentPosition = {
+        lat : latitude,
+        lng : longitude
+    }
+    var marker = new google.maps.Marker({
+    position: currentPosition,
+    map: map,
+    title: 'Hello World!'
+  });
+    
+    
+    /*currentPosition = {
         lat: latitude,
         lng: longitude
-    }
+    }*/
     
     map.setCenter(currentPosition);
     
-    accuracyRecord = Number(position.coords.accuracy);
-    if (AccCircle===0)
-    {            
-        AccCircle = new google.maps.Circle({
+    //accuracyRecord = position.coords.accuracy;
+    /*if (AccCircle===0){            
+    AccCircle = new google.maps.Circle({
         strokeColor: '#0000FF',
         strokeOpacity: 0.8,
         strokeWeight: 2,
@@ -107,17 +125,17 @@ function userLoc(position)
         radius: accuracyRecord
         })
               
-        benchMarker = new google.maps.Circle({
-        strokeColor: '#0000FF',
-        strokeOpacity: 1,
-        strokeWeight: 2,
-        fillColor: '#0000FF',
-        fillOpacity: 1,
-        map: map,
-        center: currentPosition,
-        radius: 2
-        })
-    }
+			  benchMarker = new google.maps.Circle({
+                strokeColor: '#0000FF',
+                strokeOpacity: 1,
+                strokeWeight: 2,
+                fillColor: '#0000FF',
+                fillOpacity: 1,
+                map: map,
+                center: currentPosition,
+                radius: 2
+            })
+            }*/
  
 }
 
@@ -165,17 +183,28 @@ function randomDestination()
             longitudeTarget = Math.random()*plusOrMinusB*0.3 + longitude;
         
     
-            currentPosition1 = new google.maps.LatLng(latitude, longitude);
-            targetPosition1 = new google.maps.LatLng(latitudeTarget,longitudeTarget)
-
-            randomDis = calcDistance(currentPosition1, targetPosition1);    
+    currentPosition1 = new google.maps.LatLng(latitude, longitude);
+    targetPosition1 = new google.maps.LatLng(latitudeTarget,longitudeTarget);
+    
+    console.log(latitude);
+    console.log(longitude);
+    console.log(latitudeTarget);
+    console.log(longitudeTarget);        
+            
+   randomDis = calcDistance(currentPosition1, targetPosition1);    
         }
             targetPosition = {
             lat: latitudeTarget,
             lng: longitudeTarget
             }
+            
+        var marker2 = new google.maps.Marker({
+            position: targetPosition1,
+            map: map,
+            title: 'Bitch'
+          });
     
-        beachMarker = new google.maps.Circle({
+   /* beachMarker = new google.maps.Circle({
         strokeColor: '#00ff00',
         strokeOpacity: 1,
         strokeWeight: 2,
@@ -184,7 +213,7 @@ function randomDestination()
         map: map,
         center: new google.maps.LatLng(latitudeTarget,longitudeTarget),
         radius: 2
-        }) 
+    }) */
     }
     else
     {
@@ -209,27 +238,27 @@ function randomDestination()
             targetPosition = {
             lat: latitudeTarget,
             lng: longitudeTarget
-            }
+        }
+        
     
-        beachMarker = new google.maps.Circle({
+   /* beachMarker = new google.maps.Circle({
         strokeColor: '#00ff00',
         strokeOpacity: 1,
         strokeWeight: 2,
         fillColor: '#00ff00',
         fillOpacity: 1,
         map: map,
-        center: new google.maps.LatLng(latitudeTarget,longitudeTarget),
+        center: new google.maps.LatLng(lat  itudeTarget,longitudeTarget),
         radius: 2
-        })
-    }
+    })*/
+        }
         
     document.getElementById("go").disabled = false;
 }
 
     //calculates distance between two points in km's
-function calcDistance(currentPosition1, targetPosition1) 
-{
-    return (google.maps.geometry.spherical.computeDistanceBetween(currentPosition1, targetPosition1)).toFixed(2);
+function calcDistance(p1, p2) {
+        return (google.maps.geometry.spherical.computeDistanceBetween(p1, p2)).toFixed(2);
 }
 
 function start()
@@ -264,6 +293,8 @@ function start()
     
     function go()
     {
+        var now = new Date();
+        startTime = now.toLocaleTimeString();
         goNow.innerHTML = "Start";
         document.getElementById("cancel").disabled = false;
         previousPosition = new google.maps.LatLng(latitude,longitude);
@@ -297,12 +328,14 @@ function userPathing()
 function success()
 {
     if (disCheck === 0)
-    {
-        clearInterval(timeCounter);
-        clearInterval(pathCounter);
-        clearInterval(reached);
-        document.getElementById("sav").disabled = false;
-    }
+        {
+            var now = new Date();
+            endTime = now.toLocaleTimeString();
+            clearInterval(timeCounter);
+            clearInterval(pathCounter);
+            clearInterval(reached);
+            document.getElementById("sav").disabled = false;
+        }
 }
 
 
@@ -312,12 +345,12 @@ function countTime()
     incre = incre + 1
 }
 
-function updateTime()
+/*function updateTime()
 {
     // Get the current time.
     now = new Date();
     // Display the current time.
-    outputAreaRef.innerHTML = "time: " + now.toLocaleTimeString() + "<br/>" + "accuracy: "+ accuracyRecord + "<br/>" + "distance: " + randomDis + "<br/>" + "time counter: " + incre + "\t" + "distance away: "  + disCheck + "\t" + "distance traveled: " + travelDis;
+    outputAreaRef.innerHTML = "time: " + now.toLocaleTimeString() + "<br/>" + "accuracy: " + accuracyRecord + "<br/>" + "distance: " + randomDis + "<br/>" + "time counter: " + incre + "\t" + "distance away: "  + disCheck + "\t" + "distance traveled: " + travelDis;
 }
 
 
@@ -339,10 +372,11 @@ setInterval(updateTime, 1000);
         }
 }*/
 
-function saveRun()
+/*function saveRun()
 {
     var saveRunName = [], tempVar;
     var runName = prompt("Name this run");
+    var varString;
     
     if (runName === "")
         {
@@ -350,13 +384,33 @@ function saveRun()
         }
     
     //Saving data into Run Class
-    /*savedRuns.addRun(na);    <----savedRuns = initialised run class         addRun,namingRun = public methods in run class
+    savedRuns.addRun(na);    <----savedRuns = initialised run class         addRun,namingRun = public methods in run class
     savedRuns.namingRun(na);
-    storeRun();*/
+    storeRun();
     
+    thisRun = new Run(currentPosition1,targetPosition1,storingArray,startTime,endTime,incre,now,runName);
+    
+    //run object storage
+     if (localStorage.getItem(APP_PREFIX + "RunObject"))
+        {
+            savedRuns = JSON.parse(localStorage.getItem(APP_PREFIX + 'RunObject'));
+            savedRuns.push(thisRun);
+            varString = JSON.stringify(savedRuns);
+            localStorage.setItem(APP_PREFIX + "RunObject",varString);
+        }
+    else
+        {
+            savedRuns.push(thisRun);
+            varString = JSON.stringify(savedRuns);
+            localStorage.setItem(APP_PREFIX + "RunObject",varString);
+        }
+    
+    
+    
+    //run name storage
     if (localStorage.getItem(APP_PREFIX + "Run Name"))
         {
-            saveRunName = JSON.parse(localStorage.getItem(APP_PREFIX + 'Run Name'));
+            saveRunName = JSON.parse(localStorage.getItem(APP_PREFIX + 'RunName'));
             saveRunName.push(runName);
             tempVar = JSON.stringify(saveRunName);
             localStorage.setItem(APP_PREFIX + "Run Name",tempVar);
@@ -370,5 +424,5 @@ function saveRun()
     
     displayMessage("Run was successfully saved.");
     document.location.href = 'index.html';
-}
+} */
 

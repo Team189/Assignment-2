@@ -23,14 +23,13 @@
             </div>
           </header>
           <main class="mdl-layout__content">
-              
               <!--   Main page content here:   -->
               <div id="map"></div>
               <div id="output"></div>
               <button id="go"onclick="start()" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Start</button>
-              <button id="gen"onclick="randomDestination()" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Genrate</button>
-              <button id="cancel"onclick="location.href = 'newRun.html';" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Cancel</button>
+              <button id="clea"onclick="location.href='newRun.html'" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Clear</button>
               <button id="sav"onclick="saveRun()" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Save</button>
+              <button id="new"onclick="randomDestination()" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">New location</button>
 
           </main>
           <div id="toast" class="mdl-js-snackbar mdl-snackbar">
@@ -45,7 +44,7 @@
         <script src="js/shared.js"></script>
         <script src="js/newRunPage.js"></script>
         <script async defer
-  src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyB6w19a7U7Pu7ZO18Gzbvc9QGDIq1g9PGk&callback=initMap">
-    </script>
+                src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyB6w19a7U7Pu7ZO18Gzbvc9QGDIq1g9PGk&callback=initMap&libraries=geometry"></script>
+            
     </body>
 </html>

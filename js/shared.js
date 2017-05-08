@@ -1,21 +1,49 @@
 // Shared code needed by all three pages.
 
 
-function Run() {
-    
+class Run{
+
+    constructor(start,des,pathArray,timeStart, timeEnd,dur,date,runName){
     //attributes
-        this._startPos  ;
-        this._desPos ;
-        this._arrayLoc = [];
-        this._startTime  ;
-        this._endTime ;
-        this._duration = 0;
-        this._date = new Date();
+        this._startPos = start ,
+        this._desPos = des,
+        this._arrayLoc = pathArray;
+        this._startTime = timeStart;
+        this._endTime = timeEnd;
+        this._duration = dur;
+        this._date = date;
+        this._nameRun = "";
         
-        
+    }
+    
+    //methods
+    getRun(){
+        var runObj = {
+            startPos : this._startPos,
+            desPos : this._desPos,
+            arrayLoc : this._arrayLoc,
+            startTime : this._arrayLoc,
+            endTime : this._endTime,
+            duration : this._duration,
+            date : this._date,
+            nameRun : this._nameRun,
+        }
+    }
+    
+    setNameRun(newName){
+        this._nameRun = newName;
+    }
+    
+}
+    
+    
+    
+    
+    
+    
     //methods
     //function as an argument of getCurrentPosition
-        this.returnInitialPosition = function(position){
+        /*this.returnInitialPosition = function(position){
             this._startPos = {
                 lat: position.coords.latitude,
                 lng: position.coords.longitude
@@ -60,22 +88,7 @@ function Run() {
        
         
     //randomly generate a destination
-        this.destination = function(){
-            while (randomDis < 60 || randomDis > 150){
-            //provide a location 60m and 150m away from current location
-            plusOrMinusLat = Math.random() < 0.5 ? -1 : 1
-            plusOrMinusLng = Math.random() < 0.5 ? -1 : 1
-
-            var gg1 = Math.random()*plusOrMinusLat*0.5 + startPos.lat;
-            var gg2 = Math.random()*plusOrMinusLng*0.5 + startPos.lng;
-
-            this._desPos = {
-                lat: gg1,
-                lng: gg2
-            }
-        }
         
-        }
         
         //stops timer when last position is less than or equals to 10m 
         this.timeEnd = function(){
@@ -84,13 +97,14 @@ function Run() {
             }
         }
         
+        //
         
         
         
-}
+}*/
 
 // Prefix to use for Local Storage.  You may change this.
-var APP_PREFIX = "monash.eng1003.runChallengeApp";
+//var APP_PREFIX = "monash.eng1003.runChallengeApp";
 
 // Array of saved Run objects.
-var savedRuns = [];
+//var savedRuns = [];
