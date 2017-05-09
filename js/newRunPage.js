@@ -15,7 +15,8 @@ var longitudeTarget;
 var targetPosition;
 var currentPosition1;
 var targetPosition1;
-var previousPosition;
+var startPosition;
+var startPosition1;
 var timeCounter;
 var pathCounter;
 var reached; 
@@ -23,7 +24,7 @@ var storingArray = [];
 var walkPathing;
 var travelDis = 0;
 var incre = 0;
-var disCheck = "dafuq";
+var disCheck ;
 var goNow = document.getElementById("go");
 var outputAreaRef = document.getElementById('output');
 var options = {
@@ -35,6 +36,7 @@ var thisRun;
 var startTime;
 var endTime;
 var marker;
+var marker2;
 
 document.getElementById("sav").disabled = true;
 document.getElementById("go").disabled = true;
@@ -43,8 +45,7 @@ document.getElementById("clea").disabled = true;
 
 
 // To initiate the map and initiate user tracking
-function initMap() 
-{
+function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {    //initialise the map
         zoom: 17,
         
@@ -64,6 +65,8 @@ function initMap()
 
 
 
+
+
 // Function to locate user and place marker on it
 function userLoc(position)
 {
@@ -74,11 +77,17 @@ function userLoc(position)
         lat : latitude,
         lng : longitude
     }
-    var marker = new google.maps.Marker({
-    position: currentPosition,
-    map: map,
-    title: 'Hello World!'
-  });
+    
+    currentPosition1 = new google.maps.LatLng(latitude,longitude);
+    
+    if(marker){
+        marker.setMap(null);
+    }
+        marker = new google.maps.Marker({
+        position: currentPosition,
+        map: map,
+        title: 'Hello World!'
+      });
     
     
     /*currentPosition = {
@@ -88,7 +97,7 @@ function userLoc(position)
     
     map.setCenter(currentPosition);
     
-    //accuracyRecord = position.coords.accuracy;
+    accuracyRecord = position.coords.accuracy;
     /*if (AccCircle===0){            
     AccCircle = new google.maps.Circle({
         strokeColor: '#0000FF',
@@ -98,9 +107,9 @@ function userLoc(position)
         map: map,
         center: currentPosition,
         radius: accuracyRecord
-        })
-
-        beachMarker = new google.maps.Circle({
+    })
+    
+    beachMarker = new google.maps.Circle({
         strokeColor: '#0000FF',
         strokeOpacity: 1,
         strokeWeight: 2,
@@ -109,21 +118,21 @@ function userLoc(position)
         map: map,
         center: currentPosition,
         radius: 2
-        })
+    })
     }
     else
-    {
-        AccCircle.setMap(null)
-        benchMarker.setMap(null)
-        AccCircle = new google.maps.Circle({
-        strokeColor: '#0000FF',
-        strokeOpacity: 0.8,
-        strokeWeight: 2,
-        fillColor: '#0000FF',
-        map: map,
-        center: currentPosition,
-        radius: accuracyRecord
-        })
+            {
+              AccCircle.setMap(null)
+			  benchMarker.setMap(null)
+			  AccCircle = new google.maps.Circle({
+                strokeColor: '#0000FF',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#0000FF',
+                map: map,
+                center: currentPosition,
+                radius: accuracyRecord
+              })
               
 			  benchMarker = new google.maps.Circle({
                 strokeColor: '#0000FF',
@@ -143,21 +152,21 @@ function userLoc(position)
 function errorLoc(error) 
 {
     if (error.code == 1)
-    {
-        alert("Location access denied by user.");
-    }
-    else if (error.code == 2)
-    {
-        alert("Location unavailable.");
-    }
-    else if (error.code == 3)
-    {
-        alert("Location access timed out");
-    }
-    else
-    {
-        alert("Unknown error getting location.");
-    }
+              {
+                alert("Location access denied by user.");
+              }
+              else if (error.code == 2)
+              {
+                alert("Location unavailable.");
+              }
+              else if (error.code == 3)
+              {
+                alert("Location access timed out");
+              }
+             else
+              {
+                alert("Unknown error getting location.");
+              }
 }
        
 
@@ -169,38 +178,45 @@ function randomDestination()
 //        displayMessage("accuacy too low");
 //    }
 //    else
-//    {
+//    
+    randomDis = 0;
+    startPosition = {lat : latitude, lng: longitude};
+    startPosition1 = new google.maps.LatLng(latitude,longitude);
+   
     
-    if(randomDis === 0)
-    {
-        while (randomDis < 60 || randomDis > 150)
+   if(marker2){
+       marker2.setMap(null);
+   }
+   /* if(randomDis === 0)
+        {*/
+    while (randomDis < 60 || randomDis > 150)
         {
-            //provide a location 60m and 150m away from current location
-            plusOrMinusA = Math.random() < 0.5 ? -1 : 1
-            plusOrMinusB = Math.random() < 0.5 ? -1 : 1
-
-            latitudeTarget = Math.random()*plusOrMinusA*0.3 + latitude;
-            longitudeTarget = Math.random()*plusOrMinusB*0.3 + longitude;
+        //provide a location 60m and 150m away from current location
+        plusOrMinusA = Math.random() < 0.5 ? -1 : 1
+        plusOrMinusB = Math.random() < 0.5 ? -1 : 1
+    
+        latitudeTarget = Math.random()*plusOrMinusA*0.1 + latitude;
+        longitudeTarget = Math.random()*plusOrMinusB*0.1 + longitude;
         
     
-    currentPosition1 = new google.maps.LatLng(latitude, longitude);
+    
     targetPosition1 = new google.maps.LatLng(latitudeTarget,longitudeTarget);
     
-    console.log(latitude);
+   /* console.log(latitude);
     console.log(longitude);
-    console.log(latitudeTarget);
-    console.log(longitudeTarget);        
+    console.log(latitudeTarget);*/     
             
-   randomDis = calcDistance(currentPosition1, targetPosition1);    
+   randomDis = calcDistance(startPosition1,targetPosition1);
+            if(randomDis < 150){break}
         }
             targetPosition = {
             lat: latitudeTarget,
             lng: longitudeTarget
             }
             
-        var marker2 = new google.maps.Marker({
+         marker2 = new google.maps.Marker({
             position: targetPosition1,
-            map: map,
+            map: map, 
             title: 'Bitch'
           });
     
@@ -213,27 +229,27 @@ function randomDestination()
         map: map,
         center: new google.maps.LatLng(latitudeTarget,longitudeTarget),
         radius: 2
-    }) */
-    }
-    else
-    {
-        beachMarker.setMap(null)
-        randomDis = 0;
-            
-        while (randomDis < 60 || randomDis > 150)
+    }) 
+    }*/
+ /*   else
         {
-            //provide a location 60m and 150m away from current location
-            plusOrMinusA = Math.random() < 0.5 ? -1 : 1
-            plusOrMinusB = Math.random() < 0.5 ? -1 : 1
-
-            latitudeTarget = Math.random()*plusOrMinusA*0.3 + latitude;
-            longitudeTarget = Math.random()*plusOrMinusB*0.3 + longitude;
-
-
-            currentPosition1 = new google.maps.LatLng(latitude, longitude);
-            targetPosition1 = new google.maps.LatLng(latitudeTarget,longitudeTarget)
-
-            randomDis = calcDistance(currentPosition1, targetPosition1);    
+            beachMarker.setMap(null)
+            randomDis = 0;
+            
+            while (randomDis < 60 || randomDis > 150)
+        {
+        //provide a location 60m and 150m away from current location
+        plusOrMinusA = Math.random() < 0.5 ? -1 : 1
+        plusOrMinusB = Math.random() < 0.5 ? -1 : 1
+    
+        latitudeTarget = Math.random()*plusOrMinusA*0.3 + latitude;
+        longitudeTarget = Math.random()*plusOrMinusB*0.3 + longitude;
+        
+    
+    currentPosition1 = new google.maps.LatLng(latitude, longitude);
+    targetPosition1 = new google.maps.LatLng(latitudeTarget,longitudeTarget)
+    
+   randomDis = calcDistance(currentPosition1, targetPosition1);    
         }
             targetPosition = {
             lat: latitudeTarget,
@@ -248,23 +264,23 @@ function randomDestination()
         fillColor: '#00ff00',
         fillOpacity: 1,
         map: map,
-        center: new google.maps.LatLng(lat  itudeTarget,longitudeTarget),
+        center: new google.maps.LatLng(latitudeTarget,longitudeTarget),
         radius: 2
-    })*/
-        }
+    })
+        }*/
         
     document.getElementById("go").disabled = false;
 }
 
     //calculates distance between two points in km's
-function calcDistance(p1, p2) {
-        return (google.maps.geometry.spherical.computeDistanceBetween(p1, p2)).toFixed(2);
+function calcDistance(a,b){
+    return google.maps.geometry.spherical.computeDistanceBetween(a,b);
 }
 
 function start()
 {
     document.getElementById("go").disabled = true;
-    document.getElementById("gen").disabled = true;
+    document.getElementById("new").disabled = true;
     goNow.innerHTML = "Ready?";
     
     setTimeout(counter3, 1000)
@@ -287,17 +303,21 @@ function start()
     {
         goNow.innerHTML = "1";
         timeCounter = setInterval(countTime, 1000);
+
+        
     }
 
     setTimeout(go, 4000)
+    startTime = now.toLocaleTimeString();
+    
     
     function go()
     {
         var now = new Date();
         startTime = now.toLocaleTimeString();
         goNow.innerHTML = "Start";
-        document.getElementById("cancel").disabled = false;
-        previousPosition = new google.maps.LatLng(latitude,longitude);
+        document.getElementById("clea").disabled = false;
+        //previousPosition = new google.maps.LatLng(latitude,longitude);
         pathCounter = setInterval(userPathing, 333);
         reached = setInterval(success, 100);
     }
@@ -305,24 +325,35 @@ function start()
 
 function userPathing()
 {
-    //track user history track line
-    walkPathing = new google.maps.Circle({
-    strokeColor: '#cc0000',
-    strokeOpacity: 0.5,
-    strokeWeight: 2,
-    fillColor: '#cc0000',
-    fillOpacity: 1,
-    map: map,
-    center: currentPosition,
-    radius: 0.5
-    })
+    storingArray.push(currentPosition);
+    var tempArray;
+    var tempArray1;
+    var tempArray2;
     
-    travelDis = (google.maps.geometry.spherical.computeDistanceBetween(currentPosition1, previousPosition)).toFixed(1) + Number(travelDis);
+    if(storingArray.length > 1){
+            tempArray = [storingArray[storingArray.length-2], storingArray[storingArray.length-1]];
+            tempArray1 = new google.maps.LatLng(tempArray[0].lat,tempArray[0].lng);
+            tempArray2 = new google.maps.LatLng(tempArray[1].lat,tempArray[1].lng);
+
+            //draws path as user moves
+            walkPathing =  new google.maps.Polyline({
+                  path: tempArray,
+                  geodesic: true,
+                  strokeColor: '#FF0000',
+                  strokeOpacity: 1.0,
+                  strokeWeight: 2
+                });
+
+                walkPathing.setMap(map);
+
+    travelDis = (calcDistance(startPosition1,currentPosition1)).toFixed(2) ;
     
-    storingArray.push(previousPosition) 
-    previousPosition = new google.maps.LatLng(latitude,longitude);
-            
-    disCheck = (google.maps.geometry.spherical.computeDistanceBetween(currentPosition1, targetPosition1)).toFixed(2);    
+    /*storingArray.push(previousPosition) 
+    previousPosition = new google.maps.LatLng(latitude,longitude);*/
+    
+        
+    disCheck = (calcDistance(currentPosition1, targetPosition1)).toFixed(2);
+    }
 }
 
 function success()
@@ -345,12 +376,12 @@ function countTime()
     incre = incre + 1
 }
 
-/*function updateTime()
+function updateTime()
 {
     // Get the current time.
     now = new Date();
     // Display the current time.
-    outputAreaRef.innerHTML = "time: " + now.toLocaleTimeString() + "<br/>" + "accuracy: " + accuracyRecord + "<br/>" + "distance: " + randomDis + "<br/>" + "time counter: " + incre + "\t" + "distance away: "  + disCheck + "\t" + "distance traveled: " + travelDis;
+    outputAreaRef.innerHTML = "time: " + now.toLocaleTimeString() + "<br/>" + "accuracy: " + accuracyRecord + "<br/>" + "distance: " + randomDis.toFixed(2) + "<br/>" + "time counter: " + incre + "\t" + "distance away: "  + disCheck + "\t" + "distance travelled: " + travelDis;
 }
 
 
@@ -372,7 +403,7 @@ setInterval(updateTime, 1000);
         }
 }*/
 
-/*function saveRun()
+function saveRun()
 {
     var saveRunName = [], tempVar;
     var runName = prompt("Name this run");
@@ -383,12 +414,12 @@ setInterval(updateTime, 1000);
             runName = "Untitled";
         }
     
-    //Saving data into Run Class
+    /*//Saving data into Run Class
     savedRuns.addRun(na);    <----savedRuns = initialised run class         addRun,namingRun = public methods in run class
     savedRuns.namingRun(na);
-    storeRun();
+    storeRun();*/
     
-    thisRun = new Run(currentPosition1,targetPosition1,storingArray,startTime,endTime,incre,now,runName);
+    thisRun = new Run(startPosition1,targetPosition1,storingArray,startTime,endTime,incre,now,runName);
     
     //run object storage
      if (localStorage.getItem(APP_PREFIX + "RunObject"))
@@ -424,5 +455,5 @@ setInterval(updateTime, 1000);
     
     displayMessage("Run was successfully saved.");
     document.location.href = 'index.html';
-} */
+}   
 
