@@ -207,7 +207,6 @@ function randomDestination()
     console.log(latitudeTarget);*/     
             
    randomDis = calcDistance(startPosition1,targetPosition1);
-            if(randomDis < 150){break}
         }
             targetPosition = {
             lat: latitudeTarget,
