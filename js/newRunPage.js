@@ -1,11 +1,11 @@
 // Code for the Measure Run page.
 
 var currentPosition;
-var now;
+var timeNow;
 var latitude;
 var longitude;
 var accuracyRecord;
-var AccCircle = 0;
+var AccCircle;
 var beachMarker;
 var randomDis = 0;
 var plusOrMinusA;
@@ -17,6 +17,7 @@ var currentPosition1;
 var targetPosition1;
 var startPosition;
 var startPosition1;
+var startOrNot = false;
 var timeCounter;
 var pathCounter;
 var reached; 
@@ -38,9 +39,11 @@ var endTime;
 var marker;
 var marker2;
 
+
 document.getElementById("sav").disabled = true;
 document.getElementById("go").disabled = true;
 document.getElementById("clea").disabled = true;
+document.getElementById("new").disabled = true;
 
 
 
@@ -77,6 +80,7 @@ function userLoc(position)
         lat : latitude,
         lng : longitude
     }
+	
     
     currentPosition1 = new google.maps.LatLng(latitude,longitude);
     
@@ -98,6 +102,43 @@ function userLoc(position)
     map.setCenter(currentPosition);
     
     accuracyRecord = position.coords.accuracy;
+	if(AccCircle){
+		AccCircle.setMap(null);
+		AccCircle = new google.maps.Circle({
+			strokeColor: '#0000FF',
+			strokeOpacity: 0.8,
+			strokeWeight: 2,
+			fillColor: '#0000FF',
+			map: map,
+			center: currentPosition,
+			radius: accuracyRecord
+		})
+	}
+	else{
+		AccCircle = new google.maps.Circle({
+			strokeColor: '#0000FF',
+			strokeOpacity: 0.8,
+			strokeWeight: 2,
+			fillColor: '#0000FF',
+			map: map,
+			center: currentPosition,
+			radius: accuracyRecord
+		})
+	}
+	
+	
+		if(accuracyRecord < 10000){
+			document.getElementById("new").disabled = false;
+		}
+		else if(accuracyRecord >10000){
+			document.getElementById("new").disabled = true;
+		}
+	
+		if(startOrNot == true){
+			document.getElementById("new").disabled = true;
+		}
+	
+   
     /*if (AccCircle===0){            
     AccCircle = new google.maps.Circle({
         strokeColor: '#0000FF',
@@ -207,7 +248,7 @@ function randomDestination()
     console.log(latitudeTarget);*/     
             
    randomDis = calcDistance(startPosition1,targetPosition1);
-            if(randomDis < 150){break}
+            
         }
             targetPosition = {
             lat: latitudeTarget,
@@ -279,8 +320,9 @@ function calcDistance(a,b){
 
 function start()
 {
+	startOrNot = true;
+	document.getElementById("new").disabled = true;
     document.getElementById("go").disabled = true;
-    document.getElementById("new").disabled = true;
     goNow.innerHTML = "Ready?";
     
     setTimeout(counter3, 1000)
@@ -304,28 +346,26 @@ function start()
         goNow.innerHTML = "1";
         timeCounter = setInterval(countTime, 1000);
 
-        
     }
 
     setTimeout(go, 4000)
-    startTime = now.toLocaleTimeString();
+    
     
     
     function go()
     {
-        var now = new Date();
-        startTime = now.toLocaleTimeString();
+        startTime = new Date();
         goNow.innerHTML = "Start";
         document.getElementById("clea").disabled = false;
         //previousPosition = new google.maps.LatLng(latitude,longitude);
         pathCounter = setInterval(userPathing, 333);
-        reached = setInterval(success, 100);
+        //reached = setInterval(success, 100);
     }
 }
 
 function userPathing()
 {
-    storingArray.push(currentPosition);
+    storingArray.push(currentPosition1);
     var tempArray;
     var tempArray1;
     var tempArray2;
@@ -358,15 +398,15 @@ function userPathing()
 
 function success()
 {
-    if (disCheck === 0)
-        {
-            var now = new Date();
-            endTime = now.toLocaleTimeString();
+    //if (disCheck < 100)
+        //{
+			startOrNot = false;
+            endTime = new Date();
             clearInterval(timeCounter);
             clearInterval(pathCounter);
             clearInterval(reached);
             document.getElementById("sav").disabled = false;
-        }
+        //}
 }
 
 
@@ -379,9 +419,9 @@ function countTime()
 function updateTime()
 {
     // Get the current time.
-    now = new Date();
+    timeNow = new Date();
     // Display the current time.
-    outputAreaRef.innerHTML = "time: " + now.toLocaleTimeString() + "<br/>" + "accuracy: " + accuracyRecord + "<br/>" + "distance: " + randomDis.toFixed(2) + "<br/>" + "time counter: " + incre + "\t" + "distance away: "  + disCheck + "\t" + "distance travelled: " + travelDis;
+    outputAreaRef.innerHTML = "time: " + timeNow.toLocaleTimeString() + "<br/>" + "accuracy: " + accuracyRecord + "<br/>" + "distance: " + randomDis.toFixed(2) + "<br/>" + "time counter: " + incre + "\t" + "distance away: "  + disCheck + "\t" + "distance travelled: " + travelDis;
 }
 
 
@@ -405,7 +445,8 @@ setInterval(updateTime, 1000);
 
 function saveRun()
 {
-    var saveRunName = [], tempVar;
+	
+     var tempVar;
     var runName = prompt("Name this run");
     var varString;
     
@@ -414,12 +455,15 @@ function saveRun()
             runName = "Untitled";
         }
     
+	
     /*//Saving data into Run Class
     savedRuns.addRun(na);    <----savedRuns = initialised run class         addRun,namingRun = public methods in run class
     savedRuns.namingRun(na);
     storeRun();*/
     
-    thisRun = new Run(startPosition1,targetPosition1,storingArray,startTime,endTime,incre,now,runName);
+    thisRun = new Run(startPosition1,targetPosition1,storingArray,startTime,endTime,runName);
+    thisRun.getDistance();
+    thisRun.getTimeTaken(startTime,endTime);
     
     //run object storage
      if (localStorage.getItem(APP_PREFIX + "RunObject"))
@@ -441,7 +485,7 @@ function saveRun()
     //run name storage
     if (localStorage.getItem(APP_PREFIX + "Run Name"))
         {
-            saveRunName = JSON.parse(localStorage.getItem(APP_PREFIX + 'RunName'));
+            saveRunName = JSON.parse(localStorage.getItem(APP_PREFIX + 'Run Name'));
             saveRunName.push(runName);
             tempVar = JSON.stringify(saveRunName);
             localStorage.setItem(APP_PREFIX + "Run Name",tempVar);
@@ -454,6 +498,8 @@ function saveRun()
         }
     
     displayMessage("Run was successfully saved.");
+	console.log(savedRuns);
+	console.log(saveRunName);
     document.location.href = 'index.html';
 }   
 
