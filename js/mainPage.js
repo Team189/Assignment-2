@@ -11,31 +11,19 @@ function viewRun(runIndex)
     location.href = 'viewRun.html';
 }
 
-var nameasd = ["hue", "gg", "dafuq", "fuck"]
 
+// Setting up a list to put in index.html
+// Retrieving Run Names and Run Data from local storage
+var retrievedRunName = JSON.parse(localStorage.getItem(APP_PREFIX + "Run Name"));
+var retrievedRunData = JSON.parse(localStorage.getItem(APP_PREFIX + "RunObject"));
 
-for(var i = 0; i < nameasd.length; i++)
+// Creating the list using span
+// Optional info shows date and time
+for(var i = 0; i < retrievedRunName.length; i++)
     {
-        var listLI = document.createElement("li");
-        listLI.setAttribute("class","mdl-list__item mdl-list__item--two-line");
-        listLI.setAttribute("onclick","viewRun(i)");
-        console.log(nameasd[i])
-        
-        var spann1 = document.createElement("span");
-        spann1.setAttribute("class","mdl-list__item-primary-content");
-        spann1.textContent = nameasd[i];
-        //link spann1 to li
-        listLI.appendChild(spann1)
-        
-        var spann2 = document.createElement("span");
-        spann2.setAttribute("class","mdl-list__item-sub-title");
-        spann2.textContent = "hue hu h";
-        //link spann1 to li
-        listLI.appendChild(spann2)
-        
-        
-        //link listLI to runList
-        document.getElementById("runsList").appendChild(listLI)
+        var output = "";
+        output += '<li class= "mdl-list__item mdl-list__item--two-line" onclick= "viewRun('+i+');"><span class="mdl-list__item-primary-content"><span>' + retrievedRunName[i] + '</span><span class="mdl-list__item-sub-title">' + retrievedRunData[i]._date + '</span></span></li>'
+	    document.getElementById("runsList").innerHTML += output;
     }
 
 

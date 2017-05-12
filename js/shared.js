@@ -26,7 +26,7 @@ class Run{
             startTime : this._arrayLoc,
             endTime : this._endTime,
             duration : this._duration,
-            date : this._date,
+            //date : this._date,
             nameRun : this._nameRun,
         }
     }
@@ -51,6 +51,17 @@ class Run{
         var yValue = y.valueOf();
         return this._duration = yValue-xValue;
     }
+    
+    /*getDate()
+    {
+        var currentdate = new Date();
+        var datetime = currentdate.getDay() + "/"+currentdate.getMonth() 
+        + "/" + currentdate.getFullYear() + " @ " 
+        + currentdate.getHours() + ":" 
+        + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+        
+        return this._date = datetime;
+    }*/
     
 }
     
