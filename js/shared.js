@@ -3,16 +3,17 @@
 
 class Run{
 
-    constructor(start,des,pathArray,timeStart, timeEnd,dur,date,runName){
+    constructor(start,des,pathArray,timeStart, timeEnd,runName){
     //attributes
         this._startPos = start ,
         this._desPos = des,
         this._arrayLoc = pathArray;
-        this._startTime = timeStart;
-        this._endTime = timeEnd;
-        this._duration = dur;
-        this._date = date;
-        this._nameRun = "";
+        this._startTime = timeStart.toLocaleTimeString;
+        this._endTime = timeEnd.toLocaleTimeString;
+        this._duration ;
+        this._date = timeEnd;
+        this._nameRun;
+        this._distancePath;
         
     }
     
@@ -32,6 +33,23 @@ class Run{
     
     setNameRun(newName){
         this._nameRun = newName;
+    }
+    
+    getDistance(){
+        var i = 0;
+        var disTotal = 0;
+        while(i < this._arrayLoc.length-1){
+            console.log(this._arrayLoc);
+            disTotal += google.maps.geometry.spherical.computeDistanceBetween(this._arrayLoc[i],this._arrayLoc[i+1]);
+            i++;
+        }
+        return this._distancePath = disTotal;
+    }
+    
+    getTimeTaken(x,y){
+        var xValue = x.valueOf();
+        var yValue = y.valueOf();
+        return this._duration = yValue-xValue;
     }
     
 }
@@ -97,14 +115,14 @@ class Run{
             }
         }
         
-        //
         
         
         
 }*/
 
 // Prefix to use for Local Storage.  You may change this.
-//var APP_PREFIX = "monash.eng1003.runChallengeApp";
+var APP_PREFIX = "monash.eng1003.runChallengeApp";
 
 // Array of saved Run objects.
-//var savedRuns = [];
+var savedRuns = [];
+var saveRunName = [];
