@@ -43,9 +43,13 @@ var nameRetry, retryData;
 
 //disable all buttons by default
 sav.className = "disabled";
+document.getElementById( "sav" ).setAttribute( "onClick", "" );
 go1.className = "disabled";
+document.getElementById( "go1" ).setAttribute( "onClick", "" );
 clea.className = "disabled";
+document.getElementById( "clea" ).setAttribute( "onClick", "" );
 news.className = "disabled";
+document.getElementById( "news" ).setAttribute( "onClick", "" );
 
 
 
@@ -129,15 +133,18 @@ function userLoc(position)
 	
 	
     //conditions to enable randomDestination---------------------------------------------------------
-		if(accuracyRecord <= 20){
+		if(accuracyRecord <= 20000){
 			news.className = "button";
+            document.getElementById( "news" ).setAttribute( "onClick", "randomDestination()" );
 		}
-		else if(accuracyRecord >20){
+		else if(accuracyRecord >20000){
 			news.className = "disabled";
+            document.getElementById( "news" ).setAttribute( "onClick", "" );
 		}
 	
 		if(startOrNot == true){
 			news.className = "disabled";
+            document.getElementById( "news" ).setAttribute( "onClick", "" );
 		}
     
     //when a run is reattempted
@@ -175,7 +182,9 @@ function errorLoc(error)
 function reattemptRun(){
     //disable random destination as start and end positions are predetermined
     news.className = "disabled";
+    document.getElementById( "news" ).setAttribute( "onClick", "" );
     go1.className = "button";
+    document.getElementById( "go1" ).setAttribute( "onClick", "start()" );
     
     //getting necessary info from local storage
     nameRetry = JSON.parse(localStorage.getItem(APP_PREFIX + "Retry"));
@@ -288,6 +297,7 @@ function randomDestination()
     
     //start button is activated
     go1.className = "button";
+    document.getElementById( "go1" ).setAttribute( "onClick", "start()" );
 }
 
  
@@ -296,7 +306,9 @@ function start()
 {
 	startOrNot = true;
 	news.className = "disabled";
+    document.getElementById( "news" ).setAttribute( "onClick", "" );
     go1.className = "disabled";
+    document.getElementById( "go1" ).setAttribute( "onClick", "" );
     
     //countdown
     goNow.innerHTML = "Ready?";
@@ -332,6 +344,7 @@ function start()
         startTime = new Date();   //lock in start time
         goNow.innerHTML = "Start";
         clea.className = "button"; //aallows user to clear when needed
+        document.getElementById( "clea" ).setAttribute( "onClick", "location.href = 'newRun.html'" );
         pathCounter = setInterval(userPathing, 333); //pathline drawing
 		setInterval(success,333);
       
@@ -390,6 +403,7 @@ function success()
             clearInterval(pathCounter);
             clearInterval(success);
             sav.className = "button";
+            document.getElementById( "sav" ).setAttribute( "onClick", "saveRun()" );
         }
 }
 
