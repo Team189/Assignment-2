@@ -245,6 +245,7 @@ function clearRun(){
 // A function to generate random place for user to run to as well trigger user checking
 function randomDestination()
 {
+	randomDis = 0;
     //creating start position the instant user presses button
     startPosition = {lat : latitude, lng: longitude};
     startPosition1 = new google.maps.LatLng(latitude,longitude);
@@ -332,6 +333,7 @@ function start()
         goNow.innerHTML = "Start";
         clea.className = "button"; //aallows user to clear when needed
         pathCounter = setInterval(userPathing, 333); //pathline drawing
+		setInterval(success,333);
       
     }
     
@@ -386,7 +388,7 @@ function success()
             endTime = new Date();
             clearInterval(timeCounter);
             clearInterval(pathCounter);
-            clearInterval(reached);
+            clearInterval(success);
             sav.className = "button";
         }
 }
