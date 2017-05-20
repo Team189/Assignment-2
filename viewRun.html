@@ -19,18 +19,18 @@
               <i class="material-icons">arrow_back</i>
             </button>
             <div class="mdl-layout__header-row">
-              <span class="mdl-layout-title" id="headerBarTitle">View Region</span>
+              <span class="mdl-layout-title" id="headerBarTitle"></span>
             </div>
           </header>
 
           <main class="mdl-layout__content">
-            
             <!--   Main page content here:   -->
-            <div id="map"></div>
+              <div id="map"></div>
             <div id="output"></div>
             <button id="delete"onclick="deleteRun()" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Delete Run</button>
+            <button id="delete"onclick="renameRun()" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Rename Run</button>  
+            <button id="delete"onclick="retryRun()" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Retry Run</button>  
           </main>
-            
           <div id="toast" class="mdl-js-snackbar mdl-snackbar">
             <div class="mdl-snackbar__text"></div>
             <button class="mdl-snackbar__action" type="button"></button>
@@ -42,5 +42,7 @@
         <script src="js/utility.js"></script>
         <script src="js/shared.js"></script>
         <script src="js/viewRunPage.js"></script>
+        <script async defer
+                src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyB6w19a7U7Pu7ZO18Gzbvc9QGDIq1g9PGk&callback=initMap&libraries=geometry"></script>
     </body>
 </html>

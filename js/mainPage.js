@@ -1,7 +1,11 @@
 // Code for the main app page (Past Runs list).
 
-// The following is sample code to demonstrate navigation.
-// You need not use it for final app.
+//delete reattempt in storage when this page is loaded
+if(localStorage.getItem(APP_PREFIX + "Retry")){
+    localStorage.removeItem(APP_PREFIX + "Retry"); 
+    localStorage.removeItem(APP_PREFIX + "Retry Index");
+}
+
 
 function viewRun(runIndex)
 {
@@ -13,16 +17,23 @@ function viewRun(runIndex)
 
 
 // Setting up a list to put in index.html
-// Retrieving Run Names and Run Data from local storage
+// Retrieving Run Names from local storage
 var retrievedRunName = JSON.parse(localStorage.getItem(APP_PREFIX + "Run Name"));
-var retrievedRunData = JSON.parse(localStorage.getItem(APP_PREFIX + "RunObject"));
+
 
 // Creating the list using span
 // Optional info shows date and time
 for(var i = 0; i < retrievedRunName.length; i++)
     {
+        var currentName = retrievedRunName[i];  //current name
+        var myRunData = JSON.parse(localStorage.getItem(APP_PREFIX + currentName)); //find run data for the corresponding run name
+        
+        var thisRunData = new Run(); 
+        thisRunData.initialiseFromRunPDO(myRunData); //initialising
+        
+        //display
         var output = "";
-        output += '<li class= "mdl-list__item mdl-list__item--two-line" onclick= "viewRun('+i+');"><span class="mdl-list__item-primary-content"><span>' + retrievedRunName[i] + '</span><span class="mdl-list__item-sub-title">' + retrievedRunData[i]._date + '</span></span></li>'
+        output += '<li class= "mdl-list__item mdl-list__item--two-line" onclick= "viewRun('+i+');"><span class="mdl-list__item-primary-content"><span>' + retrievedRunName[i] + '</span><span class="mdl-list__item-sub-title">' + thisRunData.date + '</span></span></li>'
 	    document.getElementById("runsList").innerHTML += output;
     }
 
