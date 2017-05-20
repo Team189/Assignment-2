@@ -1,5 +1,5 @@
 // Code for the Measure Run page.
-
+1
 var currentPosition;
 var timeNow;
 var latitude;
