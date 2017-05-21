@@ -26,8 +26,8 @@ var walkPathing;
 var travelDis = 0;
 var incre = 0;
 var disCheck ;
-var goNow = document.getElementById("go1");
-var outputAreaRef = document.getElementById('data');
+var goNow = document.getElementById("go");
+var outputAreaRef = document.getElementById('output');
 var options = {
     enableHighAccuracy: false,
     timeout: 5000,
@@ -39,17 +39,16 @@ var endTime;
 var marker;
 var marker1;
 var marker2;
+var infowindow1;
+var infowindow2;
+var retryOrNot = false;
 var nameRetry, retryData;
 
 //disable all buttons by default
-sav.className = "disabled";
-document.getElementById( "sav" ).setAttribute( "onClick", "" );
-go1.className = "disabled";
-document.getElementById( "go1" ).setAttribute( "onClick", "" );
-clea.className = "disabled";
-document.getElementById( "clea" ).setAttribute( "onClick", "" );
-news.className = "disabled";
-document.getElementById( "news" ).setAttribute( "onClick", "" );
+document.getElementById("sav").disabled = true;
+document.getElementById("go").disabled = true;
+document.getElementById("clea").disabled = true;
+document.getElementById("new").disabled = true;
 
 
 
@@ -131,27 +130,21 @@ function userLoc(position)
 		})
 	}
 	
+	 //when a run is reattempted
+    if(localStorage.getItem(APP_PREFIX + "Retry")){
+		retryOrNot= true;
+    	reattemptRun();
+	}
 	
     //conditions to enable randomDestination---------------------------------------------------------
-		if(accuracyRecord <= 20000){
-			news.className = "button";
-            document.getElementById( "news" ).setAttribute( "onClick", "randomDestination()" );
+	if(!retryOrNot){
+		if(!startOrNot){
+			if(accuracyRecord <= 20){
+				document.getElementById("new").disabled = false;
+			}
 		}
-		else if(accuracyRecord >20000){
-			news.className = "disabled";
-            document.getElementById( "news" ).setAttribute( "onClick", "" );
-		}
-	
-		if(startOrNot == true){
-			news.className = "disabled";
-            document.getElementById( "news" ).setAttribute( "onClick", "" );
-		}
+	}
     
-    //when a run is reattempted
-    if(localStorage.getItem(APP_PREFIX + "Retry")){
-    reattemptRun();
-}
-	
    
 }
 
@@ -181,19 +174,23 @@ function errorLoc(error)
 //function to be called when reattempting run
 function reattemptRun(){
     //disable random destination as start and end positions are predetermined
-    news.className = "disabled";
-    document.getElementById( "news" ).setAttribute( "onClick", "" );
-    go1.className = "button";
-    document.getElementById( "go1" ).setAttribute( "onClick", "start()" );
+    document.getElementById("new").disabled = true;
+    document.getElementById("go").disabled = false;
     
     //getting necessary info from local storage
     nameRetry = JSON.parse(localStorage.getItem(APP_PREFIX + "Retry"));
     retryData = JSON.parse(localStorage.getItem(APP_PREFIX + nameRetry));
     retryIndex = JSON.parse(localStorage.getItem(APP_PREFIX + "Retry Index"));
     
+    //deleting retry since all data is gathered
+    localStorage.removeItem(APP_PREFIX + "Retry");
+    localStorage.removeItem(APP_PREFIX + "Retry Index");
+    
     //initialising
     thisRun = new Run();
     thisRun.initialiseFromRunPDO(retryData);
+	
+	//after initialising, local storage 
     
     //literal objects
     startPosition = {
@@ -216,6 +213,7 @@ function reattemptRun(){
             map: map, 
             title: 'start'
           });
+	
     
     //end marker
     if(marker2){
@@ -227,6 +225,18 @@ function reattemptRun(){
             map: map, 
             title: 'end'
           });
+	
+	//infowindow
+	infowindow1 = new google.maps.InfoWindow({
+          content: 'Start'
+        });
+	
+       infowindow1.open(map, marker1);
+	infowindow2 = new google.maps.InfoWindow({
+          content: 'End'
+        });
+	
+       infowindow2.open(map, marker2);
     
     //convert to google latlng
     startPosition1 = new google.maps.LatLng(startPosition.lat,startPosition.lng);
@@ -238,12 +248,14 @@ function reattemptRun(){
     while(disFromStart >10){
         disFromStart = calcDistance(currentPosition1,startPosition1);
     } 
+    
+    document.getElementById("go").disabled = false;
    
 } 
 
 //clear button
 function clearRun(){
-    if(localStorage.getItem(APP_PREFIX + "Retry")){
+    if(retryOrNot == true){
         document.location.href = "viewRun.html";
     }
     else{
@@ -254,11 +266,10 @@ function clearRun(){
 // A function to generate random place for user to run to as well trigger user checking
 function randomDestination()
 {
-	randomDis = 0;
     //creating start position the instant user presses button
+    randomDis = 0;
     startPosition = {lat : latitude, lng: longitude};
     startPosition1 = new google.maps.LatLng(latitude,longitude);
-   
     
     while (randomDis < 60 || randomDis > 150) //ensure distance is within 60m to 150m away from user
         {
@@ -273,7 +284,7 @@ function randomDestination()
     
     //calculate and update distance
     targetPosition1 = new google.maps.LatLng(latitudeTarget,longitudeTarget);
-    
+        
     randomDis = calcDistance(startPosition1,targetPosition1);
             
         }
@@ -285,19 +296,24 @@ function randomDestination()
         }
     
     //destintion marker
-    if(marker2){
-        marker2.setMap(null);
-    }
-    
+	if(marker2){
+		marker2.setMap(null);	
+	}
     marker2 = new google.maps.Marker({
             position: targetPosition1,
             map: map, 
-            title: 'Bitch'
+            title: 'End'
           });
+	
+	//infowindow
+	infowindow2 = new google.maps.InfoWindow({
+          content: 'End'
+        });
+	
+       infowindow2.open(map, marker2);
     
     //start button is activated
-    go1.className = "button";
-    document.getElementById( "go1" ).setAttribute( "onClick", "start()" );
+    document.getElementById("go").disabled = false;
 }
 
  
@@ -305,10 +321,8 @@ function randomDestination()
 function start()
 {
 	startOrNot = true;
-	news.className = "disabled";
-    document.getElementById( "news" ).setAttribute( "onClick", "" );
-    go1.className = "disabled";
-    document.getElementById( "go1" ).setAttribute( "onClick", "" );
+	document.getElementById("new").disabled = true;
+    document.getElementById("go").disabled = true;
     
     //countdown
     goNow.innerHTML = "Ready?";
@@ -343,10 +357,9 @@ function start()
     {
         startTime = new Date();   //lock in start time
         goNow.innerHTML = "Start";
-        clea.className = "button"; //aallows user to clear when needed
-        document.getElementById( "clea" ).setAttribute( "onClick", "location.href = 'newRun.html'" );
+        document.getElementById("clea").disabled = false; //aallows user to clear when needed
         pathCounter = setInterval(userPathing, 333); //pathline drawing
-		setInterval(success,333);
+        setInterval(success,333)
       
     }
     
@@ -402,9 +415,9 @@ function success()
             clearInterval(timeCounter);
             clearInterval(pathCounter);
             clearInterval(success);
-            sav.className = "button";
-            document.getElementById( "sav" ).setAttribute( "onClick", "saveRun()" );
-        }
+            document.getElementById("sav").disabled = false;
+    }
+        
 }
 
 
@@ -417,8 +430,10 @@ function countTime()
 //displays info on screen
 function updateTime()
 {
+    // Get the current time.
+    timeNow = new Date();
     // Display the current time.
-    outputAreaRef.innerHTML = "distance: " + randomDis.toFixed(2) + "<br/>" + "time counter: " + incre + "<br/>" + "distance away: "  + disCheck + "<br/>" + "distance travelled: " + travelDis;
+    outputAreaRef.innerHTML = "time: " + timeNow.toLocaleTimeString() + "<br/>" + "accuracy: " + accuracyRecord + "<br/>" + "distance: " + randomDis.toFixed(2) + "<br/>" + "time counter: " + incre + "\t" + "distance away: "  + disCheck + "\t" + "distance travelled: " + travelDis.toFixed(2);
 }
 
 
@@ -450,8 +465,7 @@ function makeThisRun(posStart,posDes,someArray,timeStart,timeEnd,someDis,someOth
 function saveRun()
 {
     //if this is a reattempt
-    if(localStorage.getItem(APP_PREFIX + "Retry Index")){
-        localStorage.removeItem(APP_PREFIX + "Retry");
+    if(retryOrNot){
         localStorage.removeItem(APP_PREFIX + nameRetry);
     }
 	
@@ -484,9 +498,8 @@ function saveRun()
         {
             saveRunName = JSON.parse(localStorage.getItem(APP_PREFIX + 'Run Name'));
             saveRunName.push(myRunName);
-            if(localStorage.getItem(APP_PREFIX + "Retry Index")){
+            if(retryOrNot){
                 saveRunName.splice(retryIndex, 1);
-                localStorage.removeItem(APP_PREFIX + "Retry Index");
             }
             tempVar = JSON.stringify(saveRunName);
             localStorage.setItem(APP_PREFIX + "Run Name",tempVar);
@@ -503,4 +516,5 @@ function saveRun()
     //brings user back to main page
     document.location.href = 'index.html';
 }   
+
 

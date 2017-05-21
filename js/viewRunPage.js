@@ -12,6 +12,8 @@ var runIndex = localStorage.getItem(APP_PREFIX + "-selectedRun");
 var marker1;
 var marker2;
 var pathRun;
+var infowindow1;
+var infowindow2;
 
 //
 if (runIndex !== null)
@@ -46,7 +48,7 @@ function markerAndPathline()
         map: map,
         title: 'Hello World!'
       });
-    
+	
     //end point
     if(marker2){
         marker2.setMap(null);
@@ -56,7 +58,18 @@ function markerAndPathline()
         map: map,
         title: 'Hello World!'
       });
-
+	
+	//info windows
+	infowindow1 = new google.maps.InfoWindow({
+          content: 'Start'
+        });
+	infowindow2 = new google.maps.InfoWindow({
+          content: 'End'
+        });
+	
+       infowindow1.open(map, marker1);
+       infowindow2.open(map, marker2);
+    
     //runpath
      pathRun =  new google.maps.Polyline({
                   path: retrieveRunData._arrayLoc,
@@ -95,7 +108,7 @@ function errorLoc(error)
 
 //Displaying run
 var thisOutput = document.getElementById("output");
-var output =  "Distance travelled : " + retrieveRunData._distancePath + "<br>" + "Duration : " + retrieveRunData._duration + "<br>" + "Start time : " + displayedRun.startTime + "<br>";
+var output =  "Distance travelled : " + retrieveRunData._distancePath.toFixed(2) + "<br>" + "Duration : " + (retrieveRunData._duration/1000).toFixed(2) + " s <br>" + "End time : " + displayedRun.endTime + "<br>";
 thisOutput.innerHTML = output;
 
 

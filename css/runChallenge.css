@@ -3,13 +3,6 @@ html, body {
     margin: 0; 
     padding: 0; 
 }
-#data{
-    position: absolute;
-    top: 8px;
-    right: 16px;
-    font-size: 18px;
-    font-style: oblique;
-}
 
 #map {
     width: 100%;
@@ -21,27 +14,4 @@ html, body {
     height: calc(100vh - 184px);
 }
 
-.button{
-    background-color: #1a1aff;
-    font-size: 17px;
-    border: none;
-    text-align: center;
-    color: white;
-    padding: 10px;
-    width: 100%;
-    border: 1px solid white;
-}
-
-.disabled {
-    background-color: #1a1aff;
-    font-size: 17px;
-    border: none;
-    text-align: center;
-    color: white;
-    padding: 10px;
-    width: 100%;
-    border: 1px solid white;
-    opacity: 0.6;
-    cursor: not-allowed;
-}
 

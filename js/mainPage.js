@@ -33,7 +33,7 @@ for(var i = 0; i < retrievedRunName.length; i++)
         
         //display
         var output = "";
-        output += '<li class= "mdl-list__item mdl-list__item--two-line" onclick= "viewRun('+i+');"><span class="mdl-list__item-primary-content"><span>' + retrievedRunName[i] + '</span><span class="mdl-list__item-sub-title">' + thisRunData.date + '</span></span></li>'
+        output += '<li class= "mdl-list__item mdl-list__item--two-line" onclick= "viewRun('+i+');"><span class="mdl-list__item-primary-content"><span>' + retrievedRunName[i] + '</span><span class="mdl-list__item-sub-title">'+'Start Date : ' + thisRunData.date + '</span><span class="mdl-list__item-sub-title">'+ 'Start time : '+ thisRunData.startTime +'</span></span></li>'
 	    document.getElementById("runsList").innerHTML += output;
     }
 
